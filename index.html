@@ -1,1 +1,158 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/> <meta name="apple-mobile-web-app-capable" content="yes"/> <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/> <meta name="apple-mobile-web-app-title" content="Farm Photos"/> <title>Iadome Farm Photos</title> <style> *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent} :root{ --green:#1e3d0f; --green-light:#2d5a1b; --green-pale:#e8f0e4; --text:#1a1a1a; --text2:#666; --border:#e0e0e0; --bg:#f7f7f5; --white:#ffffff; --radius:12px; --danger:#c0392b; } html,body{height:100%;overflow:hidden;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text)} .screen{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--bg);transition:transform 0.3s ease;transform:translateX(100%);z-index:10} .screen.active{transform:translateX(0)} .header{background:var(--green);padding:env(safe-area-inset-top,20px) 16px 14px;flex-shrink:0} .header-inner{display:flex;align-items:center;justify-content:space-between;margin-top:8px} .header h1{color:#fff;font-size:18px;font-weight:500} .header-sub{color:rgba(255,255,255,0.6);font-size:12px;margin-top:2px} .back-btn{color:rgba(255,255,255,0.8);font-size:14px;padding:4px 0;background:none;border:none;cursor:pointer} .scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(env(safe-area-inset-bottom,16px) + 80px)} .bottom-action{position:fixed;bottom:0;left:0;right:0;padding:12px 16px calc(env(safe-area-inset-bottom,12px) + 12px);background:var(--white);border-top:0.5px solid var(--border);z-index:20} .btn{width:100%;padding:15px;border-radius:var(--radius);font-size:16px;font-weight:500;border:none;cursor:pointer} .btn-primary{background:var(--green);color:#fff} .btn-secondary{background:var(--green-pale);color:var(--green);margin-top:10px} .btn-outline{background:transparent;color:var(--green);border:1.5px solid var(--green);margin-top:10px} .btn:disabled{opacity:0.4} .home-hero{background:var(--green);padding:env(safe-area-inset-top,20px) 20px 28px;flex-shrink:0} .home-logo{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px} .home-logo span{color:#fff;font-size:18px;font-weight:500} .home-hero h1{color:#fff;font-size:24px;font-weight:500} .home-hero p{color:rgba(255,255,255,0.6);font-size:14px;margin-top:4px} .photo-card{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);overflow:hidden;margin-bottom:12px} .photo-thumb{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;background:#111} .photo-thumb img{width:100%;height:100%;object-fit:cover;display:block} .photo-label-overlay{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);padding:10px 12px} .photo-label-overlay span{color:#fff;font-size:13px;font-weight:500} .photo-label-overlay.empty span{color:rgba(255,255,255,0.4);font-style:italic} .photo-card-bottom{padding:10px 12px;display:flex;align-items:center;gap:10px} .photo-label-input{flex:1;border:none;outline:none;font-size:14px;color:var(--text);background:transparent;font-family:inherit} .photo-label-input::placeholder{color:#aaa} .delete-btn{width:28px;height:28px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center} .delete-btn svg{width:14px;height:14px;stroke:var(--text2);fill:none;stroke-width:2;stroke-linecap:round} .add-photo-card{background:var(--white);border-radius:var(--radius);border:1.5px dashed var(--border);padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px} .add-icon{width:40px;height:40px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center} .add-icon svg{width:18px;height:18px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round} .add-label{font-size:14px;color:var(--text2)} .audience-card{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);padding:16px;margin-bottom:12px} .audience-title{font-size:13px;color:var(--text2);margin-bottom:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em} .audience-option{display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;border:1.5px solid var(--border);margin-bottom:8px;cursor:pointer} .audience-option:last-child{margin-bottom:0} .audience-option.selected{border-color:var(--green);background:var(--green-pale)} .audience-option-icon{width:36px;height:36px;border-radius:8px;background:var(--green-pale);display:flex;align-items:center;justify-content:center;flex-shrink:0} .audience-option.selected .audience-option-icon{background:var(--green)} .audience-option-icon svg{width:16px;height:16px;stroke:var(--green);fill:none;stroke-width:1.5;stroke-linecap:round} .audience-option.selected .audience-option-icon svg{stroke:#fff} .audience-option-text h3{font-size:14px;font-weight:500;color:var(--text)} .audience-option-text p{font-size:12px;color:var(--text2);margin-top:1px} .success-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;flex:1} .success-icon{width:64px;height:64px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;margin-bottom:20px} .success-icon svg{width:28px;height:28px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round} .success-screen h2{font-size:22px;font-weight:500;margin-bottom:8px} .success-screen p{font-size:15px;color:var(--text2);line-height:1.5;margin-bottom:24px} .link-box{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);padding:14px 16px;width:100%;margin-bottom:16px;text-align:left} .link-box-label{font-size:11px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em} .link-box-url{font-size:13px;color:var(--green);word-break:break-all;font-weight:500} .copy-btn{width:100%;padding:15px;border-radius:var(--radius);font-size:16px;font-weight:500;border:1.5px solid var(--green);background:transparent;color:var(--green);cursor:pointer;margin-bottom:10px} .copy-btn.copied{background:var(--green);color:#fff} .progress-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center} .progress-overlay.show{display:flex} .progress-box{background:var(--white);border-radius:var(--radius);padding:24px 32px;text-align:center;min-width:200px} .progress-box h3{font-size:16px;font-weight:500;margin-bottom:8px} .progress-box p{font-size:13px;color:var(--text2)} .progress-bar-wrap{width:100%;height:4px;background:#eee;border-radius:2px;margin-top:16px;overflow:hidden} .progress-bar-fill{height:100%;background:var(--green);border-radius:2px;transition:width 0.3s ease;width:0%} .toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,16px) + 80px);left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:24px;font-size:14px;opacity:0;transition:all 0.25s;z-index:200;white-space:nowrap;pointer-events:none} .toast.show{opacity:1;transform:translateX(-50%) translateY(0)} #fileInput{display:none} </style> </head> <body> <div class="screen active" id="homeScreen" style="transform:translateX(0)"> <div class="home-hero"> <div style="margin-top:8px"> <div class="home-logo"><span>I</span></div> <h1>Farm Photos</h1> <p>Iadome Nursery</p> </div> </div> <div class="scroll-body" style="padding-bottom:16px"> <div style="padding:8px 0 16px"> <p style="font-size:14px;color:var(--text2);line-height:1.6">Tap below to start a new photo update. Add your photos, label each one, choose who receives it, and publish.</p> </div> <div style="background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);overflow:hidden"> <div style="padding:14px 16px;border-bottom:0.5px solid var(--border)"> <p style="font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;font-weight:500">Recent updates</p> </div> <div id="recentList" style="padding:12px 16px"> <p style="font-size:14px;color:#bbb;text-align:center;padding:12px 0">No updates yet</p> </div> </div> </div> <div class="bottom-action"> <button class="btn btn-primary" onclick="startNew()">+ New photo update</button> </div> </div> <div class="screen" id="composeScreen"> <div class="header"> <button class="back-btn" onclick="goHome()">← Back</button> <div class="header-inner"> <div> <h1>New update</h1> <div class="header-sub" id="photoCount">0 photos added</div> </div> </div> </div> <div class="scroll-body" id="photoList"> <div class="audience-card"> <div class="audience-title">Send to</div> <div class="audience-option selected" id="opt-bylands" onclick="selectAudience('bylands')"> <div class="audience-option-icon"> <svg viewBox="0 0 16 16"><rect x="2" y="4" width="12" height="9" rx="1.5"/><path d="M2 6.5l6 4 6-4"/></svg> </div> <div class="audience-option-text"> <h3>Bylands</h3> <p>Email → mikeb@bylands.com, maiv@bylands.com</p> </div> </div> <div class="audience-option" id="opt-sales" onclick="selectAudience('sales')"> <div class="audience-option-icon"> <svg viewBox="0 0 16 16"><path d="M12 5c0-2.2-1.8-4-4-4S4 2.8 4 5s1.8 4 4 4 4-1.8 4-4z"/><path d="M2 15c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg> </div> <div class="audience-option-text"> <h3>Sales team</h3> <p>Link copied to clipboard for Teams</p> </div> </div> </div> <div id="photoCards"></div> <div class="add-photo-card" onclick="triggerFileInput()"> <div class="add-icon"> <svg viewBox="0 0 18 18"><line x1="9" y1="2" x2="9" y2="16"/><line x1="2" y1="9" x2="16" y2="9"/></svg> </div> <span class="add-label">Add photo</span> </div> </div> <div class="bottom-action"> <button class="btn btn-primary" id="publishBtn" onclick="publish()" disabled>Publish update</button> </div> </div> <div class="screen" id="successScreen"> <div class="header"> <div class="header-inner"><h1>Published</h1></div> </div> <div class="success-screen"> <div class="success-icon"> <svg viewBox="0 0 28 28"><polyline points="4,14 10,20 24,8"/></svg> </div> <h2 id="successTitle">Update sent</h2> <p id="successDesc">Your photos are live.</p> <div class="link-box"> <div class="link-box-label">Gallery link</div> <div class="link-box-url" id="galleryLink"></div> </div> <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy link</button> <button class="btn btn-secondary" onclick="startNew();showScreen('composeScreen')">New update</button> <button class="btn btn-outline" onclick="goHome()">Done</button> </div> </div> <div class="progress-overlay" id="progressOverlay"> <div class="progress-box"> <h3 id="progressTitle">Uploading photos</h3> <p id="progressDesc">Please wait...</p> <div class="progress-bar-wrap"> <div class="progress-bar-fill" id="progressBar"></div> </div> </div> </div> <div class="toast" id="toast"></div> <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(this.files)"/> <script> const WORKER_URL='https://iadome-photos.cp25m9rc2x.workers.dev'; let photos=[],selectedAudience='bylands',publishedUrl=''; let history=JSON.parse(localStorage.getItem('iadome_history')||'[]'); function showScreen(id){document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.transform='translateX(100%)'});const el=document.getElementById(id);el.classList.add('active');el.style.transform='translateX(0)'} function goHome(){showScreen('homeScreen');renderHistory()} function startNew(){photos=[];selectedAudience='bylands';document.getElementById('photoCards').innerHTML='';updatePhotoCount();selectAudience('bylands');showScreen('composeScreen')} function selectAudience(a){selectedAudience=a;document.getElementById('opt-bylands').classList.toggle('selected',a==='bylands');document.getElementById('opt-sales').classList.toggle('selected',a==='sales')} function triggerFileInput(){document.getElementById('fileInput').value='';document.getElementById('fileInput').click()} function handleFiles(files){Array.from(files).forEach(file=>{const reader=new FileReader();reader.onload=e=>{const id=Date.now()+Math.random();photos.push({id,file,dataUrl:e.target.result,label:''});renderPhotoCard(photos[photos.length-1]);updatePhotoCount()};reader.readAsDataURL(file)})} function renderPhotoCard(photo){const card=document.createElement('div');card.className='photo-card';card.id=`card-${photo.id}`;card.innerHTML=`<div class="photo-thumb"><img src="${photo.dataUrl}" alt=""/><div class="photo-label-overlay empty" id="overlay-${photo.id}"><span id="overlay-text-${photo.id}">Add label below...</span></div></div><div class="photo-card-bottom"><input class="photo-label-input" type="text" placeholder="e.g. #5 Spiraea Magic Carpet" oninput="updateLabel('${photo.id}',this.value)"/><button class="delete-btn" onclick="deletePhoto('${photo.id}')"><svg viewBox="0 0 14 14"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg></button></div>`;document.getElementById('photoCards').appendChild(card)} function updateLabel(id,value){const photo=photos.find(p=>p.id==id);if(photo)photo.label=value;const overlay=document.getElementById(`overlay-${id}`);const text=document.getElementById(`overlay-text-${id}`);if(value.trim()){overlay.classList.remove('empty');text.textContent=value}else{overlay.classList.add('empty');text.textContent='Add label below...'}} function deletePhoto(id){photos=photos.filter(p=>p.id!=id);const card=document.getElementById(`card-${id}`);if(card)card.remove();updatePhotoCount()} function updatePhotoCount(){const n=photos.length;document.getElementById('photoCount').textContent=`${n} ${n===1?'photo':'photos'} added`;document.getElementById('publishBtn').disabled=n===0} function setProgress(title,desc,pct){document.getElementById('progressTitle').textContent=title;document.getElementById('progressDesc').textContent=desc;document.getElementById('progressBar').style.width=pct+'%';document.getElementById('progressOverlay').classList.toggle('show',pct<100)} function burnLabelOntoImage(dataUrl,label){return new Promise(resolve=>{const img=new Image();img.onload=()=>{const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);const barH=Math.round(img.naturalHeight*0.08);const fontSize=Math.round(barH*0.52);ctx.fillStyle='rgba(0,0,0,0.62)';ctx.fillRect(0,img.naturalHeight-barH,img.naturalWidth,barH);ctx.fillStyle='#ffffff';ctx.font='600 '+fontSize+'px -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,img.naturalWidth/2,img.naturalHeight-barH/2);resolve(canvas.toDataURL('image/jpeg',0.92))};img.src=dataUrl})} async function publish(){if(photos.length===0)return;setProgress('Uploading photos',`Sending ${photos.length} photos...`,10);try{const formData=new FormData();formData.append('title','Bylands Nurseries(IAD) - Photo Updates');formData.append('audience',selectedAudience);for(let i=0;i<photos.length;i++){const photo=photos[i];let blob=photo.file;if(photo.label&&photo.label.trim()){const burned=await burnLabelOntoImage(photo.dataUrl,photo.label.trim());const res=await fetch(burned);blob=await res.blob()}formData.append(`photo_${i}`,blob,photo.file.name);formData.append(`label_${i}`,photo.label)};setProgress('Uploading','Please wait...',40);const res=await fetch(`${WORKER_URL}/publish`,{method:'POST',body:formData});setProgress('Almost done','Generating gallery...',80);const data=await res.json();if(!data.success)throw new Error(data.error||'Upload failed');setProgress('Done','',100);publishedUrl=data.galleryUrl;history.unshift({id:data.galleryId,url:data.galleryUrl,date:new Date().toLocaleDateString('en-CA',{month:'short',day:'numeric'}),count:photos.length,audience:selectedAudience});if(history.length>10)history=history.slice(0,10);localStorage.setItem('iadome_history',JSON.stringify(history));document.getElementById('galleryLink').textContent=publishedUrl;if(selectedAudience==='bylands'){document.getElementById('successTitle').textContent='Email sent to Bylands';document.getElementById('successDesc').textContent='mikeb@bylands.com and maiv@bylands.com have been notified.'}else{document.getElementById('successTitle').textContent='Ready to share';document.getElementById('successDesc').textContent='Copy the link and paste it into your Teams message.';setTimeout(copyLink,400)}setTimeout(()=>{document.getElementById('progressOverlay').classList.remove('show');showScreen('successScreen')},400)}catch(err){document.getElementById('progressOverlay').classList.remove('show');showToast('Upload failed — check your connection');console.error(err)}} function copyLink(){if(!publishedUrl)return;navigator.clipboard.writeText(publishedUrl).then(()=>{const btn=document.getElementById('copyBtn');btn.textContent='Copied!';btn.classList.add('copied');showToast('Link copied to clipboard');setTimeout(()=>{btn.textContent='Copy link';btn.classList.remove('copied')},2500)})} function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)} function renderHistory(){const el=document.getElementById('recentList');if(history.length===0){el.innerHTML='<p style="font-size:14px;color:#bbb;text-align:center;padding:12px 0">No updates yet</p>';return}el.innerHTML=history.map(h=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid var(--border)"><div><p style="font-size:14px;font-weight:500">${h.date}</p><p style="font-size:12px;color:var(--text2)">${h.count} photos · ${h.audience==='bylands'?'Bylands':'Sales team'}</p></div><button onclick="window.open('${h.url}')" style="background:var(--green-pale);color:var(--green);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer">View</button></div>`).join('')} renderHistory(); </script> </body> </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nursery Photo Upload</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .card { background: #fff; border-radius: 16px; padding: 40px; max-width: 560px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    .logo { text-align: center; margin-bottom: 28px; }
+    .logo h1 { font-size: 1.8rem; color: #2d3748; margin-bottom: 4px; }
+    .logo p { color: #718096; font-size: 0.95rem; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-weight: 600; color: #4a5568; margin-bottom: 6px; font-size: 0.9rem; }
+    input[type="text"], input[type="email"] { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s; outline: none; }
+    input[type="text"]:focus, input[type="email"]:focus { border-color: #4a90d9; }
+    .drop-zone { border: 2px dashed #cbd5e0; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: #f7fafc; position: relative; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #4a90d9; background: #ebf4ff; }
+    .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .drop-zone .icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .drop-zone p { color: #718096; font-size: 0.9rem; line-height: 1.5; }
+    .drop-zone strong { color: #4a90d9; }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 16px; }
+    .preview-item { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: #e2e8f0; }
+    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+    .preview-item .remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+    .file-count { color: #4a90d9; font-weight: 600; font-size: 0.85rem; margin-top: 10px; text-align: center; }
+    .btn { width: 100%; padding: 14px; background: #4a90d9; color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
+    .btn:hover:not(:disabled) { background: #357abd; }
+    .btn:disabled { background: #a0aec0; cursor: not-allowed; }
+    .progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 16px; overflow: hidden; display: none; }
+    .progress-fill { height: 100%; background: #4a90d9; width: 0%; transition: width 0.3s; border-radius: 3px; }
+    .status { margin-top: 20px; padding: 16px; border-radius: 10px; font-size: 0.9rem; display: none; }
+    .status.success { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; }
+    .status.error { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; }
+    .gallery-link { display: inline-block; margin-top: 12px; color: #4a90d9; font-weight: 600; text-decoration: none; word-break: break-all; }
+    .gallery-link:hover { text-decoration: underline; }
+    .note { color: #718096; font-size: 0.8rem; margin-top: 12px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <h1>Weekly Photos</h1>
+      <p>Upload photos for your child. No limit on number of photos!</p>
+    </div>
+    <form id="uploadForm">
+      <div class="form-group">
+        <label for="childName">Child's Name</label>
+        <input type="text" id="childName" name="childName" placeholder="e.g. Emma Johnson" required />
+      </div>
+      <div class="form-group">
+        <label for="submitterEmail">Your Email (optional)</label>
+        <input type="email" id="submitterEmail" name="submitterEmail" placeholder="parent@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Photos</label>
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="photoInput" name="photos" multiple accept="image/*" />
+          <div class="icon">🖼️</div>
+          <p><strong>Click to select</strong> or drag and drop photos here</p>
+          <p>Upload as many photos as you like - no limit!</p>
+        </div>
+        <div class="preview-grid" id="previewGrid"></div>
+        <p class="file-count" id="fileCount"></p>
+      </div>
+      <button type="submit" class="btn" id="submitBtn" disabled>Select photos to upload</button>
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </form>
+    <div class="status" id="statusMsg"></div>
+    <p class="note">Photos are uploaded directly and securely.</p>
+  </div>
+  <script>
+    var WORKER_URL = 'https://iadome-photos.cp25m9rc2x.workers.dev';
+    var BATCH_SIZE = 10;
+    var selectedFiles = [];
+    var form = document.getElementById('uploadForm');
+    var photoInput = document.getElementById('photoInput');
+    var previewGrid = document.getElementById('previewGrid');
+    var fileCount = document.getElementById('fileCount');
+    var submitBtn = document.getElementById('submitBtn');
+    var progressBar = document.getElementById('progressBar');
+    var progressFill = document.getElementById('progressFill');
+    var statusMsg = document.getElementById('statusMsg');
+    var dropZone = document.getElementById('dropZone');
+    photoInput.addEventListener('change', function(e) { handleFiles(Array.from(e.target.files)); });
+    dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('dragover'); });
+    dropZone.addEventListener('drop', function(e) { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(Array.from(e.dataTransfer.files).filter(function(f) { return f.type.startsWith('image/'); })); });
+    function handleFiles(files) { selectedFiles = selectedFiles.concat(files); renderPreviews(); updateSubmitBtn(); }
+    function renderPreviews() {
+      previewGrid.innerHTML = '';
+      selectedFiles.forEach(function(file, i) {
+        var div = document.createElement('div'); div.className = 'preview-item';
+        var img = document.createElement('img'); img.src = URL.createObjectURL(file);
+        var btn = document.createElement('button'); btn.className = 'remove'; btn.textContent = 'x';
+        btn.onclick = function() { selectedFiles.splice(i, 1); renderPreviews(); updateSubmitBtn(); };
+        div.appendChild(img); div.appendChild(btn); previewGrid.appendChild(div);
+      });
+      fileCount.textContent = selectedFiles.length > 0 ? selectedFiles.length + ' photo' + (selectedFiles.length !== 1 ? 's' : '') + ' selected' : '';
+    }
+    function updateSubmitBtn() {
+      if (selectedFiles.length > 0) { submitBtn.disabled = false; submitBtn.textContent = 'Upload ' + selectedFiles.length + ' Photo' + (selectedFiles.length !== 1 ? 's' : ''); }
+      else { submitBtn.disabled = true; submitBtn.textContent = 'Select photos to upload'; }
+    }
+    function setProgress(pct) { progressFill.style.width = pct + '%'; }
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var childName = document.getElementById('childName').value.trim();
+      if (!childName) { alert('Please enter the child name.'); return; }
+      if (selectedFiles.length === 0) { alert('Please select at least one photo.'); return; }
+      submitBtn.disabled = true;
+      progressBar.style.display = 'block';
+      statusMsg.style.display = 'none';
+      setProgress(5);
+      var batches = [];
+      for (var i = 0; i < selectedFiles.length; i += BATCH_SIZE) { batches.push(selectedFiles.slice(i, i + BATCH_SIZE)); }
+      var galleryUrl = null;
+      var totalUploaded = 0;
+      var batchIndex = 0;
+      function uploadNext() {
+        if (batchIndex >= batches.length) {
+          setProgress(100);
+          statusMsg.className = 'status success';
+          statusMsg.style.display = 'block';
+          statusMsg.innerHTML = '<strong>Upload complete!</strong> ' + totalUploaded + ' photo' + (totalUploaded !== 1 ? 's' : '') + ' uploaded.<br/><a class="gallery-link" href="' + galleryUrl + '" target="_blank">View Gallery</a>';
+          selectedFiles = []; renderPreviews(); updateSubmitBtn(); form.reset();
+          return;
+        }
+        var batch = batches[batchIndex];
+        var fd = new FormData();
+        fd.append('childName', childName);
+        fd.append('submitterEmail', document.getElementById('submitterEmail').value.trim());
+        for (var j = 0; j < batch.length; j++) fd.append('photos', batch[j]);
+        fetch(WORKER_URL + '/upload', { method: 'POST', body: fd })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data.error) throw new Error(data.error);
+            totalUploaded += data.photoCount || batch.length;
+            if (batchIndex === 0) galleryUrl = data.galleryUrl;
+            setProgress(10 + ((batchIndex + 1) / batches.length) * 85);
+            batchIndex++;
+            uploadNext();
+          })
+          .catch(function(err) {
+            setProgress(0); statusMsg.className = 'status error'; statusMsg.style.display = 'block';
+            statusMsg.textContent = 'Upload failed: ' + err.message;
+            submitBtn.disabled = false; updateSubmitBtn();
+          });
+      }
+      uploadNext();
+    });
+  </script>
+</body>
+</html>
