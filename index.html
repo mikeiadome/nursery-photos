@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f0f4f0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-    .card { background: #fff; border-radius: 16px; padding: 40px; max-width: 560px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    .card { background: #fff; border-radius: 16px; padding: 40px; max-width: 640px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
     .logo { text-align: center; margin-bottom: 28px; }
     .logo h1 { font-size: 1.8rem; color: #2d5a27; margin-bottom: 4px; }
     .logo p { color: #718096; font-size: 0.95rem; }
@@ -21,16 +21,25 @@
     .drop-zone .icon { font-size: 2.5rem; margin-bottom: 12px; }
     .drop-zone p { color: #718096; font-size: 0.9rem; line-height: 1.5; }
     .drop-zone strong { color: #2d5a27; }
-    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 16px; }
-    .preview-item { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: #e2e8f0; }
-    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
-    .preview-item .remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+    .preview-section { margin-top: 16px; }
+    .preview-section-title { font-size: 0.85rem; font-weight: 600; color: #4a5568; margin-bottom: 10px; }
+    .preview-list { display: flex; flex-direction: column; gap: 12px; }
+    .preview-item { display: flex; align-items: flex-start; gap: 12px; background: #f7faf7; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; }
+    .preview-item .thumb { position: relative; flex-shrink: 0; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: #e2e8f0; }
+    .preview-item .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .preview-item .thumb .remove { position: absolute; top: 3px; right: 3px; background: rgba(0,0,0,0.65); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; line-height: 1; }
+    .preview-item .caption-area { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .preview-item .filename { font-size: 0.78rem; color: #a0aec0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .preview-item .caption-input { width: 100%; padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 7px; font-size: 0.88rem; outline: none; transition: border-color 0.2s; resize: none; font-family: inherit; }
+    .preview-item .caption-input:focus { border-color: #2d5a27; }
+    .preview-item .caption-hint { font-size: 0.75rem; color: #a0aec0; }
     .file-count { color: #2d5a27; font-weight: 600; font-size: 0.85rem; margin-top: 10px; text-align: center; }
     .btn { width: 100%; padding: 14px; background: #2d5a27; color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
     .btn:hover:not(:disabled) { background: #1e3d1b; }
     .btn:disabled { background: #a0aec0; cursor: not-allowed; }
     .progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 16px; overflow: hidden; display: none; }
     .progress-fill { height: 100%; background: #2d5a27; width: 0%; transition: width 0.3s; border-radius: 3px; }
+    .progress-label { font-size: 0.8rem; color: #718096; text-align: center; margin-top: 6px; display: none; }
     .status { margin-top: 20px; padding: 16px; border-radius: 10px; font-size: 0.9rem; display: none; }
     .status.success { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; }
     .status.error { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; }
@@ -43,7 +52,7 @@
   <div class="card">
     <div class="logo">
       <h1>🌱 Plant Photo Updates</h1>
-      <p>Upload weekly plant photos. No limit on number of photos!</p>
+      <p>Upload weekly plant photos with descriptions. No limit on number of photos!</p>
     </div>
     <form id="uploadForm">
       <div class="form-group">
@@ -60,98 +69,207 @@
           <input type="file" id="photoInput" name="photos" multiple accept="image/*" />
           <div class="icon">📷</div>
           <p><strong>Click to select</strong> or drag and drop photos here</p>
-          <p>Upload as many photos as you like - no limit!</p>
+          <p>Add as many as you like — then add a description to each one below</p>
         </div>
-        <div class="preview-grid" id="previewGrid"></div>
         <p class="file-count" id="fileCount"></p>
+        <div class="preview-section" id="previewSection" style="display:none">
+          <p class="preview-section-title">Add a description to each photo (optional) — it will be printed on the image</p>
+          <div class="preview-list" id="previewList"></div>
+        </div>
       </div>
       <button type="submit" class="btn" id="submitBtn" disabled>Select photos to upload</button>
-      <div class="progress-bar" id="progressBar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
+      <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+      <p class="progress-label" id="progressLabel"></p>
     </form>
     <div class="status" id="statusMsg"></div>
-    <p class="note">Photos are uploaded directly and securely to cloud storage.</p>
+    <p class="note">Descriptions are burned directly onto the photos before uploading.</p>
   </div>
+
   <script>
     var WORKER_URL = 'https://iadome-photos.cp25m9rc2x.workers.dev';
     var BATCH_SIZE = 10;
-    var selectedFiles = [];
+    var selectedFiles = [];   // {file, caption}
     var form = document.getElementById('uploadForm');
     var photoInput = document.getElementById('photoInput');
-    var previewGrid = document.getElementById('previewGrid');
     var fileCount = document.getElementById('fileCount');
     var submitBtn = document.getElementById('submitBtn');
     var progressBar = document.getElementById('progressBar');
     var progressFill = document.getElementById('progressFill');
+    var progressLabel = document.getElementById('progressLabel');
     var statusMsg = document.getElementById('statusMsg');
     var dropZone = document.getElementById('dropZone');
-    photoInput.addEventListener('change', function(e) { handleFiles(Array.from(e.target.files)); });
+    var previewSection = document.getElementById('previewSection');
+    var previewList = document.getElementById('previewList');
+
+    photoInput.addEventListener('change', function(e) { addFiles(Array.from(e.target.files)); e.target.value = ''; });
     dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('dragover'); });
     dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('dragover'); });
-    dropZone.addEventListener('drop', function(e) { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(Array.from(e.dataTransfer.files).filter(function(f) { return f.type.startsWith('image/'); })); });
-    function handleFiles(files) { selectedFiles = selectedFiles.concat(files); renderPreviews(); updateSubmitBtn(); }
-    function renderPreviews() {
-      previewGrid.innerHTML = '';
-      selectedFiles.forEach(function(file, i) {
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault(); dropZone.classList.remove('dragover');
+      addFiles(Array.from(e.dataTransfer.files).filter(function(f) { return f.type.startsWith('image/'); }));
+    });
+
+    function addFiles(files) {
+      files.forEach(function(f) { selectedFiles.push({ file: f, caption: '' }); });
+      renderList();
+      updateSubmitBtn();
+    }
+
+    function renderList() {
+      previewList.innerHTML = '';
+      if (selectedFiles.length === 0) { previewSection.style.display = 'none'; fileCount.textContent = ''; return; }
+      previewSection.style.display = 'block';
+      fileCount.textContent = selectedFiles.length + ' photo' + (selectedFiles.length !== 1 ? 's' : '') + ' selected';
+      selectedFiles.forEach(function(item, i) {
         var div = document.createElement('div'); div.className = 'preview-item';
-        var img = document.createElement('img'); img.src = URL.createObjectURL(file);
-        var btn = document.createElement('button'); btn.className = 'remove'; btn.textContent = 'x';
-        btn.onclick = function() { selectedFiles.splice(i, 1); renderPreviews(); updateSubmitBtn(); };
-        div.appendChild(img); div.appendChild(btn); previewGrid.appendChild(div);
+        var thumbDiv = document.createElement('div'); thumbDiv.className = 'thumb';
+        var img = document.createElement('img'); img.src = URL.createObjectURL(item.file);
+        var removeBtn = document.createElement('button'); removeBtn.className = 'remove'; removeBtn.type = 'button'; removeBtn.textContent = 'x';
+        removeBtn.onclick = function() { selectedFiles.splice(i, 1); renderList(); updateSubmitBtn(); };
+        thumbDiv.appendChild(img); thumbDiv.appendChild(removeBtn);
+        var captionArea = document.createElement('div'); captionArea.className = 'caption-area';
+        var fname = document.createElement('span'); fname.className = 'filename'; fname.textContent = item.file.name;
+        var textarea = document.createElement('textarea'); textarea.className = 'caption-input'; textarea.rows = 2;
+        textarea.placeholder = 'Description for this photo (will appear on the image)';
+        textarea.value = item.caption;
+        textarea.oninput = function() { selectedFiles[i].caption = textarea.value; };
+        var hint = document.createElement('span'); hint.className = 'caption-hint'; hint.textContent = 'Leave blank to upload without text';
+        captionArea.appendChild(fname); captionArea.appendChild(textarea); captionArea.appendChild(hint);
+        div.appendChild(thumbDiv); div.appendChild(captionArea);
+        previewList.appendChild(div);
       });
-      fileCount.textContent = selectedFiles.length > 0 ? selectedFiles.length + ' photo' + (selectedFiles.length !== 1 ? 's' : '') + ' selected' : '';
     }
+
     function updateSubmitBtn() {
-      if (selectedFiles.length > 0) { submitBtn.disabled = false; submitBtn.textContent = 'Upload ' + selectedFiles.length + ' Photo' + (selectedFiles.length !== 1 ? 's' : ''); }
-      else { submitBtn.disabled = true; submitBtn.textContent = 'Select photos to upload'; }
+      if (selectedFiles.length > 0) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Upload ' + selectedFiles.length + ' Photo' + (selectedFiles.length !== 1 ? 's' : '');
+      } else { submitBtn.disabled = true; submitBtn.textContent = 'Select photos to upload'; }
     }
-    function setProgress(pct) { progressFill.style.width = pct + '%'; }
+
+    function setProgress(pct, label) {
+      progressFill.style.width = pct + '%';
+      if (label) { progressLabel.style.display = 'block'; progressLabel.textContent = label; }
+    }
+
+    // Burn caption text onto an image using Canvas, return a Blob
+    function burnCaption(file, caption) {
+      return new Promise(function(resolve) {
+        if (!caption || !caption.trim()) { resolve(file); return; }
+        var img = new Image();
+        var url = URL.createObjectURL(file);
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(url);
+
+          // Scale font to image size — roughly 3.5% of the shorter dimension
+          var shortSide = Math.min(canvas.width, canvas.height);
+          var fontSize = Math.max(24, Math.round(shortSide * 0.045));
+          var padding = Math.round(fontSize * 0.7);
+          var lineHeight = Math.round(fontSize * 1.35);
+
+          ctx.font = 'bold ' + fontSize + 'px -apple-system, BlinkMacSystemFont, Arial, sans-serif';
+          ctx.textBaseline = 'bottom';
+
+          // Word-wrap the caption to fit 90% of image width
+          var maxWidth = canvas.width * 0.88;
+          var words = caption.trim().split(' ');
+          var lines = [];
+          var current = '';
+          words.forEach(function(w) {
+            var test = current ? current + ' ' + w : w;
+            if (ctx.measureText(test).width > maxWidth && current) { lines.push(current); current = w; }
+            else { current = test; }
+          });
+          if (current) lines.push(current);
+
+          var blockH = lines.length * lineHeight + padding * 2;
+          var blockY = canvas.height - blockH;
+
+          // Semi-transparent dark bar behind text
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
+          ctx.fillRect(0, blockY, canvas.width, blockH);
+
+          // White text
+          ctx.fillStyle = '#ffffff';
+          lines.forEach(function(line, li) {
+            var y = blockY + padding + (li + 1) * lineHeight;
+            ctx.fillText(line, padding, y);
+          });
+
+          canvas.toBlob(function(blob) {
+            var newFile = new File([blob], file.name, { type: 'image/jpeg' });
+            resolve(newFile);
+          }, 'image/jpeg', 0.92);
+        };
+        img.onerror = function() { URL.revokeObjectURL(url); resolve(file); };
+        img.src = url;
+      });
+    }
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       var weekLabel = document.getElementById('weekLabel').value.trim();
       if (!weekLabel) { alert('Please enter the week number.'); return; }
       if (selectedFiles.length === 0) { alert('Please select at least one photo.'); return; }
+
       submitBtn.disabled = true;
       progressBar.style.display = 'block';
+      progressLabel.style.display = 'block';
       statusMsg.style.display = 'none';
-      setProgress(5);
-      var batches = [];
-      for (var i = 0; i < selectedFiles.length; i += BATCH_SIZE) { batches.push(selectedFiles.slice(i, i + BATCH_SIZE)); }
-      var galleryUrl = null;
-      var totalUploaded = 0;
-      var batchIndex = 0;
-      function uploadNext() {
-        if (batchIndex >= batches.length) {
-          setProgress(100);
-          statusMsg.className = 'status success';
-          statusMsg.style.display = 'block';
-          statusMsg.innerHTML = '<strong>Upload complete!</strong> ' + totalUploaded + ' photo' + (totalUploaded !== 1 ? 's' : '') + ' uploaded for ' + weekLabel + '.<br/><a class="gallery-link" href="' + galleryUrl + '" target="_blank">View Gallery</a>';
-          selectedFiles = []; renderPreviews(); updateSubmitBtn(); form.reset();
-          return;
+      setProgress(2, 'Preparing photos...');
+
+      // Step 1: burn captions onto all images
+      var burnPromises = selectedFiles.map(function(item) { return burnCaption(item.file, item.caption); });
+      Promise.all(burnPromises).then(function(processedFiles) {
+        setProgress(15, 'Uploading...');
+
+        var batches = [];
+        for (var i = 0; i < processedFiles.length; i += BATCH_SIZE) { batches.push(processedFiles.slice(i, i + BATCH_SIZE)); }
+
+        var galleryUrl = null;
+        var totalUploaded = 0;
+        var batchIndex = 0;
+
+        function uploadNext() {
+          if (batchIndex >= batches.length) {
+            setProgress(100, 'Done!');
+            statusMsg.className = 'status success';
+            statusMsg.style.display = 'block';
+            statusMsg.innerHTML = '<strong>Upload complete!</strong> ' + totalUploaded + ' photo' + (totalUploaded !== 1 ? 's' : '') + ' uploaded for ' + weekLabel + '.<br/><a class="gallery-link" href="' + galleryUrl + '" target="_blank">View Gallery →</a>';
+            selectedFiles = []; renderList(); updateSubmitBtn(); form.reset();
+            return;
+          }
+          var batch = batches[batchIndex];
+          var fd = new FormData();
+          fd.append('weekLabel', weekLabel);
+          fd.append('submitterEmail', document.getElementById('submitterEmail').value.trim());
+          for (var j = 0; j < batch.length; j++) fd.append('photos', batch[j]);
+
+          setProgress(15 + (batchIndex / batches.length) * 80, 'Uploading batch ' + (batchIndex + 1) + ' of ' + batches.length + '...');
+
+          fetch(WORKER_URL + '/upload', { method: 'POST', body: fd })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data.error) throw new Error(data.error);
+              totalUploaded += data.photoCount || batch.length;
+              if (batchIndex === 0) galleryUrl = data.galleryUrl;
+              batchIndex++;
+              uploadNext();
+            })
+            .catch(function(err) {
+              setProgress(0, '');
+              statusMsg.className = 'status error'; statusMsg.style.display = 'block';
+              statusMsg.textContent = 'Upload failed: ' + err.message;
+              submitBtn.disabled = false; updateSubmitBtn();
+            });
         }
-        var batch = batches[batchIndex];
-        var fd = new FormData();
-        fd.append('weekLabel', weekLabel);
-        fd.append('submitterEmail', document.getElementById('submitterEmail').value.trim());
-        for (var j = 0; j < batch.length; j++) fd.append('photos', batch[j]);
-        fetch(WORKER_URL + '/upload', { method: 'POST', body: fd })
-          .then(function(r) { return r.json(); })
-          .then(function(data) {
-            if (data.error) throw new Error(data.error);
-            totalUploaded += data.photoCount || batch.length;
-            if (batchIndex === 0) galleryUrl = data.galleryUrl;
-            setProgress(10 + ((batchIndex + 1) / batches.length) * 85);
-            batchIndex++;
-            uploadNext();
-          })
-          .catch(function(err) {
-            setProgress(0); statusMsg.className = 'status error'; statusMsg.style.display = 'block';
-            statusMsg.textContent = 'Upload failed: ' + err.message;
-            submitBtn.disabled = false; updateSubmitBtn();
-          });
-      }
-      uploadNext();
+        uploadNext();
+      });
     });
   </script>
 </body>
