@@ -3,38 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nursery Photo Upload</title>
+  <title>Bylands Nursery - Plant Photo Upload</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f0f4f0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
     .card { background: #fff; border-radius: 16px; padding: 40px; max-width: 560px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
     .logo { text-align: center; margin-bottom: 28px; }
-    .logo h1 { font-size: 1.8rem; color: #2d3748; margin-bottom: 4px; }
+    .logo h1 { font-size: 1.8rem; color: #2d5a27; margin-bottom: 4px; }
     .logo p { color: #718096; font-size: 0.95rem; }
     .form-group { margin-bottom: 20px; }
     label { display: block; font-weight: 600; color: #4a5568; margin-bottom: 6px; font-size: 0.9rem; }
     input[type="text"], input[type="email"] { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s; outline: none; }
-    input[type="text"]:focus, input[type="email"]:focus { border-color: #4a90d9; }
-    .drop-zone { border: 2px dashed #cbd5e0; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: #f7fafc; position: relative; }
-    .drop-zone:hover, .drop-zone.dragover { border-color: #4a90d9; background: #ebf4ff; }
+    input[type="text"]:focus, input[type="email"]:focus { border-color: #2d5a27; }
+    .drop-zone { border: 2px dashed #cbd5e0; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: #f7faf7; position: relative; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #2d5a27; background: #edf5ed; }
     .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .drop-zone .icon { font-size: 2.5rem; margin-bottom: 12px; }
     .drop-zone p { color: #718096; font-size: 0.9rem; line-height: 1.5; }
-    .drop-zone strong { color: #4a90d9; }
+    .drop-zone strong { color: #2d5a27; }
     .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 16px; }
     .preview-item { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: #e2e8f0; }
     .preview-item img { width: 100%; height: 100%; object-fit: cover; }
     .preview-item .remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
-    .file-count { color: #4a90d9; font-weight: 600; font-size: 0.85rem; margin-top: 10px; text-align: center; }
-    .btn { width: 100%; padding: 14px; background: #4a90d9; color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
-    .btn:hover:not(:disabled) { background: #357abd; }
+    .file-count { color: #2d5a27; font-weight: 600; font-size: 0.85rem; margin-top: 10px; text-align: center; }
+    .btn { width: 100%; padding: 14px; background: #2d5a27; color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
+    .btn:hover:not(:disabled) { background: #1e3d1b; }
     .btn:disabled { background: #a0aec0; cursor: not-allowed; }
     .progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 16px; overflow: hidden; display: none; }
-    .progress-fill { height: 100%; background: #4a90d9; width: 0%; transition: width 0.3s; border-radius: 3px; }
+    .progress-fill { height: 100%; background: #2d5a27; width: 0%; transition: width 0.3s; border-radius: 3px; }
     .status { margin-top: 20px; padding: 16px; border-radius: 10px; font-size: 0.9rem; display: none; }
     .status.success { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; }
     .status.error { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; }
-    .gallery-link { display: inline-block; margin-top: 12px; color: #4a90d9; font-weight: 600; text-decoration: none; word-break: break-all; }
+    .gallery-link { display: inline-block; margin-top: 12px; color: #2d5a27; font-weight: 600; text-decoration: none; word-break: break-all; }
     .gallery-link:hover { text-decoration: underline; }
     .note { color: #718096; font-size: 0.8rem; margin-top: 12px; text-align: center; }
   </style>
@@ -42,23 +42,23 @@
 <body>
   <div class="card">
     <div class="logo">
-      <h1>Weekly Photos</h1>
-      <p>Upload photos for your child. No limit on number of photos!</p>
+      <h1>🌱 Plant Photo Updates</h1>
+      <p>Upload weekly plant photos. No limit on number of photos!</p>
     </div>
     <form id="uploadForm">
       <div class="form-group">
-        <label for="childName">Child's Name</label>
-        <input type="text" id="childName" name="childName" placeholder="e.g. Emma Johnson" required />
+        <label for="weekLabel">Week Number</label>
+        <input type="text" id="weekLabel" name="weekLabel" placeholder="e.g. Week 16" required />
       </div>
       <div class="form-group">
         <label for="submitterEmail">Your Email (optional)</label>
-        <input type="email" id="submitterEmail" name="submitterEmail" placeholder="parent@example.com" />
+        <input type="email" id="submitterEmail" name="submitterEmail" placeholder="you@example.com" />
       </div>
       <div class="form-group">
         <label>Photos</label>
         <div class="drop-zone" id="dropZone">
           <input type="file" id="photoInput" name="photos" multiple accept="image/*" />
-          <div class="icon">🖼️</div>
+          <div class="icon">📷</div>
           <p><strong>Click to select</strong> or drag and drop photos here</p>
           <p>Upload as many photos as you like - no limit!</p>
         </div>
@@ -71,7 +71,7 @@
       </div>
     </form>
     <div class="status" id="statusMsg"></div>
-    <p class="note">Photos are uploaded directly and securely.</p>
+    <p class="note">Photos are uploaded directly and securely to cloud storage.</p>
   </div>
   <script>
     var WORKER_URL = 'https://iadome-photos.cp25m9rc2x.workers.dev';
@@ -109,8 +109,8 @@
     function setProgress(pct) { progressFill.style.width = pct + '%'; }
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      var childName = document.getElementById('childName').value.trim();
-      if (!childName) { alert('Please enter the child name.'); return; }
+      var weekLabel = document.getElementById('weekLabel').value.trim();
+      if (!weekLabel) { alert('Please enter the week number.'); return; }
       if (selectedFiles.length === 0) { alert('Please select at least one photo.'); return; }
       submitBtn.disabled = true;
       progressBar.style.display = 'block';
@@ -126,13 +126,13 @@
           setProgress(100);
           statusMsg.className = 'status success';
           statusMsg.style.display = 'block';
-          statusMsg.innerHTML = '<strong>Upload complete!</strong> ' + totalUploaded + ' photo' + (totalUploaded !== 1 ? 's' : '') + ' uploaded.<br/><a class="gallery-link" href="' + galleryUrl + '" target="_blank">View Gallery</a>';
+          statusMsg.innerHTML = '<strong>Upload complete!</strong> ' + totalUploaded + ' photo' + (totalUploaded !== 1 ? 's' : '') + ' uploaded for ' + weekLabel + '.<br/><a class="gallery-link" href="' + galleryUrl + '" target="_blank">View Gallery</a>';
           selectedFiles = []; renderPreviews(); updateSubmitBtn(); form.reset();
           return;
         }
         var batch = batches[batchIndex];
         var fd = new FormData();
-        fd.append('childName', childName);
+        fd.append('weekLabel', weekLabel);
         fd.append('submitterEmail', document.getElementById('submitterEmail').value.trim());
         for (var j = 0; j < batch.length; j++) fd.append('photos', batch[j]);
         fetch(WORKER_URL + '/upload', { method: 'POST', body: fd })
