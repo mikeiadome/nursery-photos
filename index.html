@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Farm Photos"/>
+<title>Iadome Farm Photos</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{
+    --green:#1e3d0f;
+    --green-light:#2d5a1b;
+    --green-pale:#e8f0e4;
+    --text:#1a1a1a;
+    --text2:#666;
+    --border:#e0e0e0;
+    --bg:#f7f7f5;
+    --white:#ffffff;
+    --radius:12px;
+    --danger:#c0392b;
+  }
+  html,body{height:100%;overflow:hidden;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text)}
+
+  /* SCREENS */
+  .screen{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--bg);transition:transform 0.3s ease;transform:translateX(100%);z-index:10}
+  .screen.active{transform:translateX(0)}
+  .screen.behind{transform:translateX(-30%)}
+
+  /* HEADER */
+  .header{background:var(--green);padding:env(safe-area-inset-top,20px) 16px 14px;flex-shrink:0}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+  .header h1{color:#fff;font-size:18px;font-weight:500}
+  .header-sub{color:rgba(255,255,255,0.6);font-size:12px;margin-top:2px}
+  .back-btn{color:rgba(255,255,255,0.8);font-size:14px;padding:4px 0;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px}
+
+  /* SCROLL BODY */
+  .scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(env(safe-area-inset-bottom,16px) + 80px)}
+
+  /* BOTTOM ACTION */
+  .bottom-action{position:fixed;bottom:0;left:0;right:0;padding:12px 16px calc(env(safe-area-inset-bottom,12px) + 12px);background:var(--white);border-top:0.5px solid var(--border);z-index:20}
+
+  /* BUTTONS */
+  .btn{width:100%;padding:15px;border-radius:var(--radius);font-size:16px;font-weight:500;border:none;cursor:pointer;transition:opacity 0.15s}
+  .btn:active{opacity:0.8}
+  .btn-primary{background:var(--green);color:#fff}
+  .btn-secondary{background:var(--green-pale);color:var(--green);margin-top:10px}
+  .btn-outline{background:transparent;color:var(--green);border:1.5px solid var(--green)}
+  .btn:disabled{opacity:0.4}
+
+  /* HOME SCREEN */
+  .home-hero{background:var(--green);padding:env(safe-area-inset-top,20px) 20px 28px;flex-shrink:0}
+  .home-hero-inner{margin-top:8px}
+  .home-logo{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .home-logo span{color:#fff;font-size:18px;font-weight:500}
+  .home-hero h1{color:#fff;font-size:24px;font-weight:500}
+  .home-hero p{color:rgba(255,255,255,0.6);font-size:14px;margin-top:4px}
+
+  /* PHOTO CARD */
+  .photo-card{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);overflow:hidden;margin-bottom:12px}
+  .photo-thumb{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;background:#111}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo-label-overlay{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);padding:10px 12px}
+  .photo-label-overlay span{color:#fff;font-size:13px;font-weight:500}
+  .photo-label-overlay.empty span{color:rgba(255,255,255,0.4);font-style:italic}
+  .photo-card-bottom{padding:10px 12px;display:flex;align-items:center;gap:10px}
+  .photo-label-input{flex:1;border:none;outline:none;font-size:14px;color:var(--text);background:transparent;font-family:inherit}
+  .photo-label-input::placeholder{color:#aaa}
+  .delete-btn{width:28px;height:28px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .delete-btn svg{width:14px;height:14px;stroke:var(--text2);fill:none;stroke-width:2;stroke-linecap:round}
+
+  /* ADD PHOTO */
+  .add-photo-card{background:var(--white);border-radius:var(--radius);border:1.5px dashed var(--border);padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px;transition:border-color 0.15s}
+  .add-photo-card:active{border-color:var(--green)}
+  .add-icon{width:40px;height:40px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center}
+  .add-icon svg{width:18px;height:18px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round}
+  .add-label{font-size:14px;color:var(--text2)}
+
+  /* AUDIENCE SELECT */
+  .audience-card{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);padding:16px;margin-bottom:12px}
+  .audience-title{font-size:13px;color:var(--text2);margin-bottom:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
+  .audience-option{display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;border:1.5px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all 0.15s}
+  .audience-option:last-child{margin-bottom:0}
+  .audience-option.selected{border-color:var(--green);background:var(--green-pale)}
+  .audience-option-icon{width:36px;height:36px;border-radius:8px;background:var(--green-pale);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .audience-option.selected .audience-option-icon{background:var(--green)}
+  .audience-option-icon svg{width:16px;height:16px;stroke:var(--green);fill:none;stroke-width:1.5;stroke-linecap:round}
+  .audience-option.selected .audience-option-icon svg{stroke:#fff}
+  .audience-option-text h3{font-size:14px;font-weight:500;color:var(--text)}
+  .audience-option-text p{font-size:12px;color:var(--text2);margin-top:1px}
+
+  /* SUCCESS */
+  .success-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;flex:1}
+  .success-icon{width:64px;height:64px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+  .success-icon svg{width:28px;height:28px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round}
+  .success-screen h2{font-size:22px;font-weight:500;margin-bottom:8px}
+  .success-screen p{font-size:15px;color:var(--text2);line-height:1.5;margin-bottom:24px}
+  .link-box{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);padding:14px 16px;width:100%;margin-bottom:16px;text-align:left}
+  .link-box-label{font-size:11px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em}
+  .link-box-url{font-size:13px;color:var(--green);word-break:break-all;font-weight:500}
+  .copy-btn{width:100%;padding:15px;border-radius:var(--radius);font-size:16px;font-weight:500;border:1.5px solid var(--green);background:transparent;color:var(--green);cursor:pointer;margin-bottom:10px;transition:all 0.15s}
+  .copy-btn.copied{background:var(--green);color:#fff;border-color:var(--green)}
+
+  /* PROGRESS */
+  .progress-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+  .progress-overlay.show{display:flex}
+  .progress-box{background:var(--white);border-radius:var(--radius);padding:24px 32px;text-align:center;min-width:200px}
+  .progress-box h3{font-size:16px;font-weight:500;margin-bottom:8px}
+  .progress-box p{font-size:13px;color:var(--text2)}
+  .progress-bar-wrap{width:100%;height:4px;background:#eee;border-radius:2px;margin-top:16px;overflow:hidden}
+  .progress-bar-fill{height:100%;background:var(--green);border-radius:2px;transition:width 0.3s ease;width:0%}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,16px) + 80px);left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:24px;font-size:14px;opacity:0;transition:all 0.25s;z-index:200;white-space:nowrap;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* HIDDEN FILE INPUT */
+  #fileInput{display:none}
+</style>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div class="screen active" id="homeScreen" style="transform:translateX(0)">
+  <div class="home-hero">
+    <div class="home-hero-inner">
+      <div class="home-logo"><span>I</span></div>
+      <h1>Farm Photos</h1>
+      <p>Iadome Nursery</p>
+    </div>
+  </div>
+  <div class="scroll-body" style="padding-bottom:16px">
+    <div style="padding:8px 0 16px">
+      <p style="font-size:14px;color:var(--text2);line-height:1.6">Tap below to start a new photo update. Add your photos, label each one, choose who receives it, and publish.</p>
+    </div>
+
+    <div style="background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border)">
+        <p style="font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;font-weight:500;margin-bottom:2px">Recent updates</p>
+      </div>
+      <div id="recentList" style="padding:12px 16px">
+        <p style="font-size:14px;color:#bbb;text-align:center;padding:12px 0">No updates yet</p>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-action">
+    <button class="btn btn-primary" onclick="startNew()">+ New photo update</button>
+  </div>
+</div>
+
+<!-- COMPOSE SCREEN -->
+<div class="screen" id="composeScreen">
+  <div class="header">
+    <button class="back-btn" onclick="goHome()">← Back</button>
+    <div class="header-inner">
+      <div>
+        <h1>New update</h1>
+        <div class="header-sub" id="photoCount">0 photos added</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-body" id="photoList">
+    <div class="audience-card">
+      <div class="audience-title">Send to</div>
+      <div class="audience-option selected" id="opt-bylands" onclick="selectAudience('bylands')">
+        <div class="audience-option-icon">
+          <svg viewBox="0 0 16 16"><rect x="2" y="4" width="12" height="9" rx="1.5"/><path d="M2 6.5l6 4 6-4"/></svg>
+        </div>
+        <div class="audience-option-text">
+          <h3>Bylands</h3>
+          <p>Email → mikeb@bylands.com, maiv@bylands.com</p>
+        </div>
+      </div>
+      <div class="audience-option" id="opt-sales" onclick="selectAudience('sales')">
+        <div class="audience-option-icon">
+          <svg viewBox="0 0 16 16"><path d="M12 5c0-2.2-1.8-4-4-4S4 2.8 4 5s1.8 4 4 4 4-1.8 4-4z"/><path d="M2 15c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+        </div>
+        <div class="audience-option-text">
+          <h3>Sales team</h3>
+          <p>Link copied to clipboard for Teams</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="photoCards"></div>
+
+    <div class="add-photo-card" onclick="triggerFileInput()">
+      <div class="add-icon">
+        <svg viewBox="0 0 18 18"><line x1="9" y1="2" x2="9" y2="16"/><line x1="2" y1="9" x2="16" y2="9"/></svg>
+      </div>
+      <span class="add-label">Add photo</span>
+    </div>
+  </div>
+  <div class="bottom-action">
+    <button class="btn btn-primary" id="publishBtn" onclick="publish()" disabled>Publish update</button>
+  </div>
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div class="screen" id="successScreen">
+  <div class="header">
+    <div class="header-inner">
+      <h1>Published</h1>
+    </div>
+  </div>
+  <div class="success-screen">
+    <div class="success-icon">
+      <svg viewBox="0 0 28 28"><polyline points="4,14 10,20 24,8"/></svg>
+    </div>
+    <h2 id="successTitle">Update sent</h2>
+    <p id="successDesc">Your photos are live.</p>
+    <div class="link-box">
+      <div class="link-box-label">Gallery link</div>
+      <div class="link-box-url" id="galleryLink"></div>
+    </div>
+    <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy link</button>
+    <button class="btn btn-secondary" onclick="startNew(); showScreen('composeScreen')">New update</button>
+    <button class="btn btn-outline" style="margin-top:10px" onclick="goHome()">Done</button>
+  </div>
+</div>
+
+<!-- PROGRESS OVERLAY -->
+<div class="progress-overlay" id="progressOverlay">
+  <div class="progress-box">
+    <h3 id="progressTitle">Uploading photos</h3>
+    <p id="progressDesc">Please wait...</p>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FILE INPUT -->
+<input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(this.files)"/>
+
+<script>
+const WORKER_URL = 'https://iadome-photos.workers.dev';
+
+let photos = [];
+let selectedAudience = 'bylands';
+let publishedUrl = '';
+let history = JSON.parse(localStorage.getItem('iadome_history') || '[]');
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active', 'behind');
+    s.style.transform = '';
+  });
+  document.getElementById(id).classList.add('active');
+  document.getElementById(id).style.transform = 'translateX(0)';
+}
+
+function goHome() {
+  showScreen('homeScreen');
+  renderHistory();
+}
+
+function startNew() {
+  photos = [];
+  selectedAudience = 'bylands';
+  document.getElementById('photoCards').innerHTML = '';
+  updatePhotoCount();
+  selectAudience('bylands');
+  showScreen('composeScreen');
+}
+
+function selectAudience(a) {
+  selectedAudience = a;
+  document.getElementById('opt-bylands').classList.toggle('selected', a === 'bylands');
+  document.getElementById('opt-sales').classList.toggle('selected', a === 'sales');
+}
+
+function triggerFileInput() {
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fileInput').click();
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const id = Date.now() + Math.random();
+      photos.push({ id, file, dataUrl: e.target.result, label: '' });
+      renderPhotoCard(photos[photos.length - 1]);
+      updatePhotoCount();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderPhotoCard(photo) {
+  const card = document.createElement('div');
+  card.className = 'photo-card';
+  card.id = `card-${photo.id}`;
+  card.innerHTML = `
+    <div class="photo-thumb">
+      <img src="${photo.dataUrl}" alt=""/>
+      <div class="photo-label-overlay ${photo.label ? '' : 'empty'}" id="overlay-${photo.id}">
+        <span id="overlay-text-${photo.id}">${photo.label || 'Add label below...'}</span>
+      </div>
+    </div>
+    <div class="photo-card-bottom">
+      <input class="photo-label-input" type="text" placeholder="e.g. #5 Spiraea Magic Carpet" value="${photo.label}"
+        oninput="updateLabel('${photo.id}', this.value)"
+        onfocus="this.select()"/>
+      <button class="delete-btn" onclick="deletePhoto('${photo.id}')">
+        <svg viewBox="0 0 14 14"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg>
+      </button>
+    </div>`;
+  document.getElementById('photoCards').appendChild(card);
+}
+
+function updateLabel(id, value) {
+  const photo = photos.find(p => p.id == id);
+  if (photo) photo.label = value;
+  const overlay = document.getElementById(`overlay-${id}`);
+  const text = document.getElementById(`overlay-text-${id}`);
+  if (value.trim()) {
+    overlay.classList.remove('empty');
+    text.textContent = value;
+  } else {
+    overlay.classList.add('empty');
+    text.textContent = 'Add label below...';
+  }
+}
+
+function deletePhoto(id) {
+  photos = photos.filter(p => p.id != id);
+  const card = document.getElementById(`card-${id}`);
+  if (card) card.remove();
+  updatePhotoCount();
+}
+
+function updatePhotoCount() {
+  const n = photos.length;
+  document.getElementById('photoCount').textContent = `${n} ${n === 1 ? 'photo' : 'photos'} added`;
+  document.getElementById('publishBtn').disabled = n === 0;
+}
+
+function setProgress(title, desc, pct) {
+  document.getElementById('progressTitle').textContent = title;
+  document.getElementById('progressDesc').textContent = desc;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressOverlay').classList.toggle('show', pct < 100);
+}
+
+async function publish() {
+  if (photos.length === 0) return;
+
+  setProgress('Uploading photos', `0 of ${photos.length} uploaded...`, 5);
+
+  try {
+    const formData = new FormData();
+    const date = new Date().toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
+    formData.append('title', 'Bylands Nurseries(IAD) - Photo Updates');
+    formData.append('audience', selectedAudience);
+    formData.append('date', date);
+
+    photos.forEach((photo, i) => {
+      formData.append(`photo_${i}`, photo.file);
+      formData.append(`label_${i}`, photo.label);
+    });
+
+    setProgress('Uploading photos', `Sending ${photos.length} ${photos.length === 1 ? 'photo' : 'photos'}...`, 30);
+
+    const res = await fetch(`${WORKER_URL}/publish`, {
+      method: 'POST',
+      body: formData
+    });
+
+    setProgress('Almost done', 'Generating gallery...', 80);
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.error || 'Upload failed');
+
+    setProgress('Done', '', 100);
+    publishedUrl = data.galleryUrl;
+
+    // Save to history
+    history.unshift({
+      id: data.galleryId,
+      url: data.galleryUrl,
+      date: new Date().toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }),
+      count: photos.length,
+      audience: selectedAudience
+    });
+    if (history.length > 10) history = history.slice(0, 10);
+    localStorage.setItem('iadome_history', JSON.stringify(history));
+
+    // Show success
+    document.getElementById('galleryLink').textContent = publishedUrl;
+    if (selectedAudience === 'bylands') {
+      document.getElementById('successTitle').textContent = 'Email sent to Bylands';
+      document.getElementById('successDesc').textContent = 'mikeb@bylands.com and maiv@bylands.com have been notified. Copy the link below to share anywhere else.';
+    } else {
+      document.getElementById('successTitle').textContent = 'Ready to share';
+      document.getElementById('successDesc').textContent = 'Copy the link and paste it into your Teams message to the sales team.';
+      setTimeout(copyLink, 400);
+    }
+
+    setTimeout(() => {
+      document.getElementById('progressOverlay').classList.remove('show');
+      showScreen('successScreen');
+    }, 400);
+
+  } catch (err) {
+    document.getElementById('progressOverlay').classList.remove('show');
+    showToast('Upload failed — check your connection');
+    console.error(err);
+  }
+}
+
+function copyLink() {
+  if (!publishedUrl) return;
+  navigator.clipboard.writeText(publishedUrl).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    showToast('Link copied to clipboard');
+    setTimeout(() => {
+      btn.textContent = 'Copy link';
+      btn.classList.remove('copied');
+    }, 2500);
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function renderHistory() {
+  const el = document.getElementById('recentList');
+  if (history.length === 0) {
+    el.innerHTML = '<p style="font-size:14px;color:#bbb;text-align:center;padding:12px 0">No updates yet</p>';
+    return;
+  }
+  el.innerHTML = history.map(h => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid var(--border)">
+      <div>
+        <p style="font-size:14px;font-weight:500">${h.date}</p>
+        <p style="font-size:12px;color:var(--text2)">${h.count} photos · ${h.audience === 'bylands' ? 'Bylands' : 'Sales team'}</p>
+      </div>
+      <button onclick="window.open('${h.url}')" style="background:var(--green-pale);color:var(--green);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer">View</button>
+    </div>`).join('');
+}
+
+renderHistory();
+</script>
+</body>
+</html>
